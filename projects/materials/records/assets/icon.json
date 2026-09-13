@@ -1,0 +1,22 @@
+{
+  "id": "icon",
+  "label": "Materials Icon",
+  "data": {
+    "kind": "image",
+    "source": {
+      "type": "project-file",
+      "path": "assets/images/icon.bmp"
+    },
+    "aliases": [],
+    "sampling": "linear",
+    "mimeType": "image/bmp",
+    "extension": ".bmp",
+    "byteSize": 70,
+    "imageMetadata": {
+      "width": 2,
+      "height": 2,
+      "hasAlpha": false,
+      "orientation": 1
+    }
+  }
+}

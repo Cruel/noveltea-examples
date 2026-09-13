@@ -1,0 +1,49 @@
+{
+  "id": "inspect",
+  "label": "Inspect",
+  "data": {
+    "kind": "verb",
+    "slots": [
+      {
+        "id": "target",
+        "label": { "source": { "kind": "inline", "text": "target" }, "markup": "plain" },
+        "prompt": { "source": { "kind": "inline", "text": "Choose a target" }, "markup": "plain" },
+        "selectors": [
+          {
+            "kind": "interactable-definition",
+            "interactableDefinition": { "$ref": { "collection": "interactables", "id": "switch" } }
+          }
+        ]
+      }
+    ],
+    "bindingOrder": ["target"],
+    "actionText": { "source": { "kind": "inline", "text": "Inspect" }, "markup": "plain" },
+    "completedCommandText": { "source": { "kind": "inline", "text": "Inspect target" }, "markup": "plain" },
+    "offers": [
+      {
+        "id": "inspect-switch",
+        "slotId": "target",
+        "selectors": [
+          {
+            "kind": "interactable-definition",
+            "interactableDefinition": { "$ref": { "collection": "interactables", "id": "switch" } }
+          }
+        ],
+        "rank": 0,
+        "primary": true
+      }
+    ],
+    "availability": { "kind": "always" },
+    "defaultProgram": {
+      "instructions": [
+        {
+          "id": "default-note",
+          "kind": "notify",
+          "message": { "source": { "kind": "inline", "text": "Nothing special happens." }, "markup": "plain" }
+        }
+      ],
+      "completion": { "kind": "return" },
+      "outcome": "handled"
+    }
+  }
+}

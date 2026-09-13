@@ -1,0 +1,3 @@
+dist/
+projects/*/.noveltea/
+projects/*/dist/

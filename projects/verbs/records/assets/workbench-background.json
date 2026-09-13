@@ -1,0 +1,22 @@
+{
+  "id": "workbench-background",
+  "label": "Workbench Background",
+  "data": {
+    "kind": "image",
+    "source": {
+      "type": "project-file",
+      "path": "assets/images/workbench.svg"
+    },
+    "aliases": [],
+    "sampling": "linear",
+    "mimeType": "image/svg+xml",
+    "extension": ".svg",
+    "byteSize": 468,
+    "imageMetadata": {
+      "width": 960,
+      "height": 540,
+      "hasAlpha": false,
+      "orientation": 1
+    }
+  }
+}

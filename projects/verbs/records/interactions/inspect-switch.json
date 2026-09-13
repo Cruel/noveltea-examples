@@ -1,0 +1,56 @@
+{
+  "id": "inspect-switch",
+  "label": "Inspect Switch",
+  "data": {
+    "kind": "interaction",
+    "rules": [
+      {
+        "id": "inspect-brass-switch",
+        "verb": { "$ref": { "collection": "verbs", "id": "inspect" } },
+        "slots": [
+          {
+            "slotId": "target",
+            "selectors": [
+              {
+                "kind": "exact",
+                "subject": {
+                  "kind": "interactable",
+                  "interactable": { "$ref": { "registry": "interactableInstances", "id": "switch-1" } }
+                }
+              }
+            ]
+          }
+        ],
+        "offer": {
+          "slotId": "target",
+          "rank": 10,
+          "primary": true
+        },
+        "guard": { "kind": "always" },
+        "priority": 10,
+        "program": {
+          "instructions": [
+            {
+              "id": "describe-switch",
+              "kind": "notify",
+              "message": {
+                "source": { "kind": "inline", "text": "The switch is wired through an Interaction rule." },
+                "markup": "plain"
+              }
+            },
+            {
+              "id": "describe-command-builder",
+              "kind": "notify",
+              "message": {
+                "source": { "kind": "inline", "text": "These notifications are ordered Command Builder instructions." },
+                "markup": "plain"
+              }
+            }
+          ],
+          "completion": { "kind": "return" },
+          "outcome": "handled"
+        }
+      }
+    ]
+  }
+}

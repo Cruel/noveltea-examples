@@ -1,0 +1,18 @@
+{
+  "id": "cool",
+  "label": "Cool Material",
+  "data": {
+    "kind": "material",
+    "baseMaterialId": null,
+    "displayName": "Cool Material",
+    "shader": { "$ref": { "collection": "shaders", "id": "tint" } },
+    "role": "engine-2d",
+    "postprocessScope": "world",
+    "blend": "premultiplied-alpha",
+    "uniforms": [
+      { "name": "u_tint", "value": [0.12, 0.45, 0.9, 1] }
+    ],
+    "textures": [],
+    "preview": { "geometry": "quad", "background": "checker" }
+  }
+}

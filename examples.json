@@ -1,0 +1,31 @@
+{
+  "format": "noveltea.examples",
+  "formatVersion": 1,
+  "repository": "https://github.com/Cruel/noveltea-examples",
+  "examples": [
+    {
+      "id": "materials",
+      "order": 10,
+      "title": "Materials",
+      "description": "A compact rendering example with one authored tint shader and layered Material instances.",
+      "sourcePath": "projects/materials",
+      "highlights": [
+        "Authored bgfx shader stages",
+        "Material uniform overrides",
+        "Room background and environment material rendering"
+      ]
+    },
+    {
+      "id": "verbs",
+      "order": 20,
+      "title": "Verbs",
+      "description": "A small interaction example showing a one-slot Verb, an offered Interactable target, and an ordered Command Builder program.",
+      "sourcePath": "projects/verbs",
+      "highlights": [
+        "Verb slots and offers",
+        "Interactable targeting",
+        "Interaction rules and Command Builder notifications"
+      ]
+    }
+  ]
+}

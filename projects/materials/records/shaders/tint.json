@@ -1,0 +1,33 @@
+{
+  "id": "tint",
+  "label": "Tint Shader",
+  "data": {
+    "kind": "shader",
+    "displayName": "Tint Shader",
+    "stages": [
+      {
+        "stage": "vertex",
+        "sourceMode": "inline",
+        "sourceText": "$input a_position, a_texcoord0, a_color0\n$output v_texcoord0, v_color0\n\n#include \"bgfx_shader.sh\"\n\nvoid main()\n{\n    gl_Position = mul(u_modelViewProj, vec4(a_position.xy, 0.0, 1.0));\n    v_texcoord0 = a_texcoord0;\n    v_color0 = a_color0;\n}\n",
+        "compiled": {}
+      },
+      {
+        "stage": "fragment",
+        "sourceMode": "inline",
+        "sourceText": "$input v_texcoord0, v_color0\n\n#include \"bgfx_shader.sh\"\n\nuniform vec4 u_tint;\n\nvoid main()\n{\n    gl_FragColor = v_color0 * u_tint;\n}\n",
+        "compiled": {}
+      }
+    ],
+    "uniforms": [
+      {
+        "name": "u_tint",
+        "type": "vec4",
+        "default": [1, 1, 1, 1],
+        "label": "Tint"
+      }
+    ],
+    "samplers": [],
+    "roles": ["engine-2d"],
+    "roleBindings": []
+  }
+}

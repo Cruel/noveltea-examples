@@ -1,0 +1,21 @@
+{
+  "id": "switch",
+  "label": "Brass Switch",
+  "archetype": null,
+  "archetypeOverrides": {},
+  "traits": [],
+  "defaultProperties": [],
+  "data": {
+    "kind": "interactable",
+    "displayName": "Brass Switch",
+    "stackable": false,
+    "stackLimit": null,
+    "presentation": {
+      "sprite": null,
+      "material": null,
+      "hotspots": { "kind": "none" }
+    },
+    "features": [],
+    "inventories": []
+  }
+}

@@ -56,6 +56,11 @@ function catalog() {
         buildId: `dev-${ntRevision}-web-wasm32-threads-release`,
         templateArchive: { sha256: digest('2') },
         descriptor: { sha256: digest('3') },
+        files: [
+          { path: 'player/player.aaa.wasm', size: 10, sha256: digest('a') },
+          { path: 'player/player.aaa.js', size: 11, sha256: digest('b') },
+          { path: 'player/player.aaa.data', size: 12, sha256: digest('c') },
+        ],
       },
     },
     examples: [
@@ -105,4 +110,11 @@ test('trusted publication rejects preview identity and toolchain substitution', 
   const wrongPlayer = catalog();
   wrongPlayer.toolchain.player.engineVersion = `dev-${'c'.repeat(40)}`;
   assert.throws(() => validateQualifiedPreviewCatalog(wrongPlayer, metadata, snapshotManifest()), /immutable NovelTea snapshot/);
+
+  const duplicatedPlayer = catalog();
+  duplicatedPlayer.toolchain.player.files = [];
+  assert.throws(
+    () => validateQualifiedPreviewCatalog(duplicatedPlayer, metadata, snapshotManifest()),
+    /immutable NovelTea snapshot/,
+  );
 });

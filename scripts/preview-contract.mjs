@@ -47,8 +47,18 @@ export function validatePreviewBuildMetadata(value, { prNumber, sourceRevision }
 }
 
 export function validateQualifiedPreviewCatalog(catalog, metadata, snapshot) {
-  if (catalog?.format !== 'noveltea.example-catalog' || catalog.formatVersion !== 1 || catalog.source?.repository !== 'https://github.com/Cruel/noveltea-examples' || catalog.source?.revision !== metadata.sourceRevision || catalog.toolchain?.player?.engineVersion !== `dev-${metadata.ntRevision}` || catalog.toolchain?.player?.buildId !== `dev-${metadata.ntRevision}-web-wasm32-threads-release` || catalog.toolchain?.cli?.sha256 !== snapshot.artifacts.cli.sha256 || catalog.toolchain?.player?.templateArchive?.sha256 !== snapshot.artifacts.player.sha256 || catalog.toolchain?.player?.descriptor?.sha256 !== snapshot.artifacts.descriptor.sha256 || !Array.isArray(catalog.examples) || catalog.examples.length === 0) {
+  if (catalog?.format !== 'noveltea.example-catalog' || catalog.formatVersion !== 1 || catalog.source?.repository !== 'https://github.com/Cruel/noveltea-examples' || catalog.source?.revision !== metadata.sourceRevision || catalog.toolchain?.player?.engineVersion !== `dev-${metadata.ntRevision}` || catalog.toolchain?.player?.buildId !== `dev-${metadata.ntRevision}-web-wasm32-threads-release` || catalog.toolchain?.cli?.sha256 !== snapshot.artifacts.cli.sha256 || catalog.toolchain?.player?.templateArchive?.sha256 !== snapshot.artifacts.player.sha256 || catalog.toolchain?.player?.descriptor?.sha256 !== snapshot.artifacts.descriptor.sha256 || !Array.isArray(catalog.toolchain?.player?.files) || catalog.toolchain.player.files.length === 0 || !Array.isArray(catalog.examples) || catalog.examples.length === 0) {
     throw new Error('Preview catalog does not match its source revision and immutable NovelTea snapshot.');
+  }
+  const playerExtensions = new Set();
+  for (const item of catalog.toolchain.player.files) {
+    validateArtifactMetadata(item, 'shared player file');
+    if (!item.path.startsWith('player/')) throw new Error('Shared player file escaped player directory.');
+    const match = /\.(wasm|js|data)$/.exec(item.path);
+    if (match) playerExtensions.add(match[1]);
+  }
+  if (![...['wasm', 'js', 'data']].every((extension) => playerExtensions.has(extension))) {
+    throw new Error('Preview catalog is missing shared Web player files.');
   }
   for (const example of catalog.examples) {
     validateArtifactMetadata(example?.artifacts?.runtimePackage, 'runtime package');

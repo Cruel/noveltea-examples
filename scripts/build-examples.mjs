@@ -192,6 +192,9 @@ function buildExample({
     ],
     { env: environment },
   );
+  // The showcase consumes the staged directory and its runtime package directly;
+  // the standalone export archive is redundant in this aggregate build output.
+  rmSync(`${playableDirectory}.zip`, { force: true });
 
   const runtimeMetadata = artifactMetadata(
     runtimePackage,
@@ -226,6 +229,60 @@ function buildExample({
       },
     },
   };
+}
+
+function consolidateSharedPlayer(outputRoot, examples) {
+  if (examples.length === 0) throw new Error('At least one example is required.');
+
+  const sharedPattern = /^player\..+\.(?:wasm|js|data)$/;
+  const firstFiles = examples[0].artifacts.playable.files.filter((file) =>
+    sharedPattern.test(basename(file.path)),
+  );
+  const extensions = new Set(firstFiles.map((file) => basename(file.path).split('.').at(-1)));
+  if (!extensions.has('wasm') || !extensions.has('js') || !extensions.has('data')) {
+    throw new Error('Playable export did not contain the complete shared Web player.');
+  }
+
+  const expected = new Map(firstFiles.map((file) => [basename(file.path), file]));
+  const sharedRoot = join(outputRoot, 'player');
+  mkdirSync(sharedRoot, { recursive: true });
+  for (const file of firstFiles) {
+    cpSync(resolve(outputRoot, file.path), join(sharedRoot, basename(file.path)));
+  }
+
+  for (const example of examples) {
+    const playableRoot = resolve(outputRoot, example.artifacts.playable.path);
+    const candidateFiles = example.artifacts.playable.files.filter((file) =>
+      sharedPattern.test(basename(file.path)),
+    );
+    const candidate = new Map(candidateFiles.map((file) => [basename(file.path), file]));
+    if (
+      candidate.size !== expected.size ||
+      [...expected].some(([name, metadata]) => {
+        const value = candidate.get(name);
+        return !value || value.size !== metadata.size || value.sha256 !== metadata.sha256;
+      })
+    ) {
+      throw new Error(`Example '${example.id}' did not use the exact shared Web player.`);
+    }
+
+    const indexPath = join(playableRoot, 'index.html');
+    let html = readFileSync(indexPath, 'utf8');
+    for (const name of expected.keys()) {
+      html = html
+        .replaceAll(`"/${name}"`, `"../../player/${name}"`)
+        .replaceAll(`'/${name}'`, `'../../player/${name}'`);
+    }
+    writeFileSync(indexPath, html, 'utf8');
+    for (const file of candidateFiles) rmSync(resolve(outputRoot, file.path));
+
+    example.artifacts.playable.files = directoryMetadata(
+      playableRoot,
+      example.artifacts.playable.path,
+    );
+  }
+
+  return directoryMetadata(sharedRoot, 'player');
 }
 
 function main() {
@@ -298,6 +355,8 @@ function main() {
       }),
     );
 
+    const sharedPlayerFiles = consolidateSharedPlayer(arguments_.output, examples);
+
     const catalog = {
       format: 'noveltea.example-catalog',
       formatVersion: 1,
@@ -318,6 +377,7 @@ function main() {
           playerRuntimeApiVersion: playerDescriptor.playerRuntimeApiVersion,
           templateArchive: playerTemplateMetadata,
           descriptor: playerDescriptorMetadata,
+          files: sharedPlayerFiles,
         },
       },
       examples,

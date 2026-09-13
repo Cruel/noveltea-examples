@@ -41,9 +41,12 @@ The generated `catalog.json` uses `noveltea.example-catalog` format version 1 an
 - exact examples repository/revision provenance;
 - CLI version, size, and SHA-256;
 - exact player template/build/engine identity and compatibility versions;
+- one shared Web player file set (`player/*.wasm`, `player/*.js`, and `player/*.data`) verified to be byte-identical across every exported example;
 - size and SHA-256 for each `.ntpkg` and `.ntproject`;
-- every file in each playable Web export, with size and SHA-256;
+- each example's small launcher/config/runtime-package files, with size and SHA-256;
 - the source path and human-authored metadata for each example.
+
+The normal NovelTea Web exporter remains self-contained. This repository's aggregate build validates each example through that exporter, then factors the identical player runtime out once and rewrites each launcher to reference `../../player/`. The aggregate artifact therefore carries one exact compatible player plus independent example `.ntpkg` payloads instead of duplicating the player for every Project.
 
 For identical source and toolchain inputs, the generated catalog is byte-identical. Runtime packages also use deterministic ZIP metadata in the required NovelTea toolchain, so their digests and hashed playable package names remain stable.
 
@@ -55,7 +58,7 @@ Publication is deliberately separate. `preview-publish.yml` runs only after the 
 
 The production Pages deployment contains a stable, narrowly scoped preview proxy on the separate `https://noveltea.pages.dev` origin. Preview metadata points player/project URLs at `/examples/dev/preview-assets/<token>/...` on that origin; the proxy maps only those exact immutable paths to R2 and adds the COOP/COEP/CORP response headers required by the threaded Web player. This avoids relying on unsupported arbitrary R2 object-response metadata and keeps preview player content off the primary `noveltea.dev` origin.
 
-The published `preview.json` records both the exact examples revision and exact `nt` revision. Each exported Web player is copied into that same immutable namespace, so a later `nt/master` snapshot cannot change or break an existing preview. Closing or merging a PR immediately deletes the entire PR namespace through trusted `pull_request_target` cleanup. A daily cleanup deletes previews older than 14 days only for PRs that are no longer open.
+The published `preview.json` records both the exact examples revision and exact `nt` revision. The one shared Web player plus every example launcher/`.ntpkg` is copied into that same immutable namespace, so a later `nt/master` snapshot cannot change or break an existing preview and the player is not duplicated per example. Closing or merging a PR immediately deletes the entire PR namespace through trusted `pull_request_target` cleanup. A daily cleanup deletes previews older than 14 days only for PRs that are no longer open.
 
 The preview publisher uses only `CLOUDFLARE_API_TOKEN` (the repository's examples-specific R2-only token) and `CLOUDFLARE_ACCOUNT_ID`. This repository must not receive an `nt` Pages-capable Cloudflare token, `NOVELTEA_RELEASES_TOKEN`, or a GitHub credential capable of accessing private `Cruel/nt` content.
 

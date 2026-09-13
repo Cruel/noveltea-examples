@@ -112,6 +112,11 @@ async function publish(root, prNumber, sourceRevision) {
   const previewPublicBase = `${previewOrigin}/examples/dev/preview-assets/${previewModeToken(prNumber, sourceRevision)}`;
   const storage = store();
   await storage.put(`${prefix}/catalog.json`, catalogRecord.bytes, 'application/json; charset=utf-8');
+  for (const fileMetadata of catalog.toolchain.player.files) {
+    const file = verifyFile(root, fileMetadata);
+    await storage.put(`${prefix}/${fileMetadata.path}`, file.bytes, contentType(fileMetadata.path));
+  }
+
   const examples = [];
   for (const example of catalog.examples) {
     const runtimePackage = verifyFile(root, example.artifacts.runtimePackage);

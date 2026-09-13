@@ -47,6 +47,18 @@ The generated `catalog.json` uses `noveltea.example-catalog` format version 1 an
 
 For identical source and toolchain inputs, the generated catalog is byte-identical. Runtime packages also use deterministic ZIP metadata in the required NovelTea toolchain, so their digests and hashed playable package names remain stable.
 
+## Pull-request previews
+
+Pull requests build against one immutable NovelTea development snapshot resolved from `https://assets.noveltea.dev/development/toolchains/current.json`. `preview-build.yml` has read-only repository permissions, receives no Cloudflare or private-`nt` credential, verifies every snapshot object by size and SHA-256, then uploads the generated preview only as a short-lived GitHub Actions artifact.
+
+Publication is deliberately separate. `preview-publish.yml` runs only after the unprivileged build succeeds, checks out trusted `main` publication code, downloads the untrusted artifact without executing anything from it, independently re-fetches the immutable NovelTea snapshot manifest, validates the PR/source identity, toolchain hashes, player identity, and every catalogued file, and only then receives the examples-specific R2 token. Valid previews are stored below `development/example-previews/pr-<number>/<examples-revision>/` in `noveltea-artifacts`; the immutable preview URL is `https://noveltea.dev/examples/dev/?preview=pr-<number>/<examples-revision>`.
+
+The production Pages deployment contains a stable, narrowly scoped preview proxy on the separate `https://noveltea.pages.dev` origin. Preview metadata points player/project URLs at `/examples/dev/preview-assets/<token>/...` on that origin; the proxy maps only those exact immutable paths to R2 and adds the COOP/COEP/CORP response headers required by the threaded Web player. This avoids relying on unsupported arbitrary R2 object-response metadata and keeps preview player content off the primary `noveltea.dev` origin.
+
+The published `preview.json` records both the exact examples revision and exact `nt` revision. Each exported Web player is copied into that same immutable namespace, so a later `nt/master` snapshot cannot change or break an existing preview. Closing or merging a PR immediately deletes the entire PR namespace through trusted `pull_request_target` cleanup. A daily cleanup deletes previews older than 14 days only for PRs that are no longer open.
+
+The preview publisher uses only `CLOUDFLARE_API_TOKEN` (the repository's examples-specific R2-only token) and `CLOUDFLARE_ACCOUNT_ID`. This repository must not receive an `nt` Pages-capable Cloudflare token, `NOVELTEA_RELEASES_TOKEN`, or a GitHub credential capable of accessing private `Cruel/nt` content.
+
 ## Verification
 
 Run the repository-local contract tests:

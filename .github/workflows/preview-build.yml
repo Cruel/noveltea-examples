@@ -1,0 +1,53 @@
+name: Example preview build
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: example-preview-build-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout trusted preview build code
+        uses: actions/checkout@v6
+        with:
+          ref: main
+          persist-credentials: false
+
+      - name: Checkout proposed examples source
+        uses: actions/checkout@v6
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.sha }}
+          path: build/proposed-examples
+          persist-credentials: false
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+
+      - name: Test trusted examples build contract
+        run: npm test
+
+      - name: Build proposed examples against one immutable current NovelTea snapshot
+        env:
+          NOVELTEA_PREVIEW_PR: ${{ github.event.pull_request.number }}
+          NOVELTEA_PREVIEW_SOURCE_REVISION: ${{ github.event.pull_request.head.sha }}
+          NOVELTEA_PREVIEW_SOURCE_ROOT: ${{ github.workspace }}/build/proposed-examples
+        run: node scripts/build-preview.mjs
+
+      - name: Upload unprivileged preview build
+        uses: actions/upload-artifact@v7
+        with:
+          name: noveltea-example-preview-${{ github.event.pull_request.number }}-${{ github.event.pull_request.head.sha }}
+          path: dist-preview
+          if-no-files-found: error
+          retention-days: 7

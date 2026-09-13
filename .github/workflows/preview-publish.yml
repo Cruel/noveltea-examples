@@ -1,0 +1,89 @@
+name: Publish example preview
+
+on:
+  workflow_run:
+    workflows: [Example preview build]
+    types: [completed]
+
+permissions:
+  actions: read
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: example-preview-publication
+  cancel-in-progress: false
+  queue: max
+
+jobs:
+  publish:
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'pull_request_target'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout trusted publication code
+        uses: actions/checkout@v6
+        with:
+          ref: main
+          persist-credentials: false
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+
+      - name: Download untrusted preview artifact only
+        uses: actions/download-artifact@v7
+        with:
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ github.token }}
+          pattern: noveltea-example-preview-*
+          path: build/preview-artifact
+          merge-multiple: true
+
+      - name: Verify artifact targets the current PR head
+        id: preview-identity
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          readarray -t identity < <(node -e '
+            const fs = require("fs");
+            const value = JSON.parse(fs.readFileSync("build/preview-artifact/preview-build.json", "utf8"));
+            if (!Number.isSafeInteger(value.prNumber) || value.prNumber < 1 || !/^[0-9a-f]{40}$/.test(value.sourceRevision || "")) process.exit(1);
+            process.stdout.write(`${value.prNumber}\n${value.sourceRevision}\n`);
+          ')
+          pr_number="${identity[0]}"
+          source_revision="${identity[1]}"
+          readarray -t current < <(gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr_number}" --jq '.state, .head.sha')
+          test "${current[0]}" = "open"
+          test "$source_revision" = "${current[1]}"
+          echo "pr_number=$pr_number" >> "$GITHUB_OUTPUT"
+          echo "source_revision=$source_revision" >> "$GITHUB_OUTPUT"
+
+      - name: Validate and publish preview
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: >-
+          node scripts/publish-preview.mjs publish
+          build/preview-artifact
+          "${{ steps.preview-identity.outputs.pr_number }}"
+          "${{ steps.preview-identity.outputs.source_revision }}"
+
+      - name: Add or update preview link
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ steps.preview-identity.outputs.pr_number }}
+          SOURCE_REVISION: ${{ steps.preview-identity.outputs.source_revision }}
+        run: |
+          marker='<!-- noveltea-example-preview -->'
+          url="https://noveltea.dev/examples/dev/?preview=pr-${PR_NUMBER}/${SOURCE_REVISION}"
+          body="$marker
+          Play this exact revision against its pinned NovelTea development snapshot: $url"
+          comment_id="$(gh api "repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/comments" --jq '.[] | select(.body | startswith("<!-- noveltea-example-preview -->")) | .id' | head -n1)"
+          if [ -n "$comment_id" ]; then
+            gh api --method PATCH "repos/${GITHUB_REPOSITORY}/issues/comments/${comment_id}" -f body="$body" >/dev/null
+          else
+            gh pr comment "$PR_NUMBER" --body "$body"
+          fi

@@ -24,6 +24,7 @@ import {
 } from './example-build-lib.mjs';
 
 const repositoryRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+const sourceRoot = resolve(process.env.NOVELTEA_EXAMPLES_SOURCE_ROOT ?? repositoryRoot);
 
 function usage() {
   return `Usage: node scripts/build-examples.mjs \\
@@ -133,14 +134,14 @@ function buildExample({
   templateToken,
   temporaryRoot,
 }) {
-  const sourceRoot = resolve(repositoryRoot, example.sourcePath);
-  if (!existsSync(sourceRoot) || !statSync(sourceRoot).isDirectory()) {
-    throw new Error(`Example '${example.id}' source directory is missing: ${sourceRoot}`);
+  const projectSourceRoot = resolve(sourceRoot, example.sourcePath);
+  if (!existsSync(projectSourceRoot) || !statSync(projectSourceRoot).isDirectory()) {
+    throw new Error(`Example '${example.id}' source directory is missing: ${projectSourceRoot}`);
   }
 
   const workingProject = join(temporaryRoot, 'projects', example.id);
   mkdirSync(dirname(workingProject), { recursive: true });
-  copyProjectSource(sourceRoot, workingProject);
+  copyProjectSource(projectSourceRoot, workingProject);
 
   runJsonCli(cli, ['--project', workingProject, 'validate'], { env: environment });
 
@@ -239,7 +240,7 @@ function main() {
   assertRegularFile(arguments_.playerDescriptor, 'Player template descriptor');
 
   const manifest = validateExamplesManifest(
-    JSON.parse(readFileSync(join(repositoryRoot, 'examples.json'), 'utf8')),
+    JSON.parse(readFileSync(join(sourceRoot, 'examples.json'), 'utf8')),
   );
   const playerDescriptor = validatePlayerDescriptor(
     JSON.parse(readFileSync(arguments_.playerDescriptor, 'utf8')),

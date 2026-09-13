@@ -1,0 +1,49 @@
+name: Clean example previews
+
+on:
+  pull_request_target:
+    types: [closed]
+  schedule:
+    - cron: "31 11 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: example-preview-publication
+  cancel-in-progress: false
+  queue: max
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout trusted cleanup code
+        uses: actions/checkout@v6
+        with:
+          ref: main
+          persist-credentials: false
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+
+      - name: Delete closed PR preview namespace
+        if: ${{ github.event_name == 'pull_request_target' }}
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: node scripts/publish-preview.mjs cleanup-pr "${{ github.event.pull_request.number }}"
+
+      - name: Delete stale previews for PRs that are no longer open
+        if: ${{ github.event_name != 'pull_request_target' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          active="$(gh pr list --state open --limit 1000 --json number --jq 'map(.number) | join(",")')"
+          node scripts/publish-preview.mjs cleanup-stale "$active"

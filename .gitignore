@@ -1,3 +1,5 @@
 dist/
+dist-preview/
+.preview-toolchain/
 projects/*/.noveltea/
 projects/*/dist/

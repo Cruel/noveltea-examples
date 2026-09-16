@@ -65,7 +65,7 @@
       "stripEditorData": true,
       "stripShaderSources": true,
       "compileShadersBeforeExport": true,
-      "shaderVariants": ["glsl-120", "essl-100", "essl-300"],
+      "shaderVariants": ["glsl-330", "essl-300", "metal"],
       "excludeUnusedAssets": true,
       "includeShaderSources": false,
       "includeTests": false,

@@ -3,16 +3,16 @@
   "label": "Warm Material",
   "data": {
     "kind": "material",
-    "baseMaterialId": null,
+    "base": { "kind": "preset", "preset": "engine-2d" },
     "displayName": "Warm Material",
-    "shader": { "$ref": { "collection": "shaders", "id": "tint" } },
-    "role": "engine-2d",
-    "postprocessScope": "world",
-    "blend": "premultiplied-alpha",
-    "uniforms": [
-      { "name": "u_tint", "value": [0.95, 0.32, 0.16, 1] }
-    ],
-    "textures": [],
+    "shader": {
+      "vertex": { "kind": "project", "path": "shaders/tint.vs.sc" },
+      "fragment": { "kind": "project", "path": "shaders/tint.fs.sc" }
+    },
+    "parameters": {
+      "u_tint": { "value": [0.95, 0.32, 0.16, 1] }
+    },
+    "textures": {},
     "preview": { "geometry": "quad", "background": "checker" }
   }
 }

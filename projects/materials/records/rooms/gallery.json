@@ -10,7 +10,11 @@
     "displayName": "Material Gallery",
     "background": {
       "asset": null,
-      "material": { "$ref": { "collection": "materials", "id": "cool" } },
+      "materialApplication": {
+        "material": { "$ref": { "collection": "materials", "id": "cool" } },
+        "parameters": {},
+        "textures": {}
+      },
       "fit": "cover",
       "color": "#ffffff"
     },
@@ -42,7 +46,11 @@
         "id": "warm-panel",
         "condition": { "kind": "always" },
         "asset": null,
-        "material": { "$ref": { "collection": "materials", "id": "warm" } },
+        "materialApplication": {
+          "material": { "$ref": { "collection": "materials", "id": "warm" } },
+          "parameters": {},
+          "textures": {}
+        },
         "bounds": { "x": 0.55, "y": 0.18, "width": 0.3, "height": 0.64 },
         "plane": "world-overlay",
         "order": 0,

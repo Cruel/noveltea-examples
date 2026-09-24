@@ -10,7 +10,7 @@
     "displayName": "Verb Workbench",
     "background": {
       "asset": { "$ref": { "collection": "assets", "id": "workbench-background" } },
-      "material": null,
+      "materialApplication": null,
       "fit": "cover",
       "color": "#20252d"
     },

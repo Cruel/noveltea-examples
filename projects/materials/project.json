@@ -100,6 +100,11 @@
     "assetMemoryPolicies": []
   },
   "bootstrapModule": { "$ref": { "collection": "scripts", "id": "bootstrap" } },
+  "undefinedInteractionProgram": {
+    "instructions": [],
+    "completion": { "kind": "return" },
+    "outcome": "unhandled"
+  },
   "entrypoint": { "kind": "room", "id": "gallery" },
   "inventories": [{ "id": "inventory", "label": "Inventory" }],
   "interactableInstances": {}

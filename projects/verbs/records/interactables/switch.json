@@ -11,7 +11,7 @@
     "stackable": false,
     "stackLimit": null,
     "presentation": {
-      "sprite": null,
+      "visual": null,
       "materialApplication": null,
       "hotspots": { "kind": "none" }
     },

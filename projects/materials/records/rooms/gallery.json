@@ -45,7 +45,7 @@
       {
         "id": "warm-panel",
         "condition": { "kind": "always" },
-        "asset": null,
+        "visual": null,
         "materialApplication": {
           "material": { "$ref": { "collection": "materials", "id": "warm" } },
           "parameters": {},

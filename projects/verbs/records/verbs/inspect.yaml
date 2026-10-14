@@ -1,0 +1,46 @@
+id: "inspect"
+label: "Inspect"
+data:
+  slots:
+    - id: "target"
+      label:
+        source:
+          kind: "inline"
+          text: "target"
+        markup: "plain"
+      prompt:
+        source:
+          kind: "inline"
+          text: "Choose a target"
+        markup: "plain"
+      selectors:
+        - kind: "interactable-definition"
+          interactableDefinition: "switch"
+  bindingOrder:
+    - "target"
+  actionText:
+    source:
+      kind: "inline"
+      text: "Inspect"
+    markup: "plain"
+  completedCommandText:
+    source:
+      kind: "inline"
+      text: "Inspect target"
+    markup: "plain"
+  offers:
+    - id: "inspect-switch"
+      slotId: "target"
+      selectors:
+        - kind: "interactable-definition"
+          interactableDefinition: "switch"
+      primary: true
+  defaultProgram:
+    instructions:
+      - id: "default-note"
+        kind: "notify"
+        message:
+          source:
+            kind: "inline"
+            text: "Nothing special happens."
+          markup: "plain"

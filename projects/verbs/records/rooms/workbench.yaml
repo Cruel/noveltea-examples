@@ -1,0 +1,45 @@
+id: "workbench"
+label: "Verb Workbench"
+archetype: null
+archetypeOverrides: {}
+traits: []
+localProperties: []
+data:
+  displayName: "Verb Workbench"
+  background:
+    asset: "workbench-background"
+    color: "#20252d"
+  description:
+    source:
+      kind: "inline"
+      text: "Click the central hotspot and choose Inspect. The offered Verb resolves an Interaction rule and runs two ordered Command Builder notifications."
+  presentationSpace:
+    size:
+      width: 1920
+      height: 1080
+    defaultView:
+      center:
+        x: 960
+        "y": 540
+  hotspots:
+    - id: "switch-hotspot"
+      label: "Brass Switch"
+      condition: always
+      inputOrder: 0
+      highlight:
+        kind: "default"
+      shape:
+        kind: "rect"
+        bounds:
+          x: 0.4
+          "y": 0.3
+          width: 0.2
+          height: 0.4
+      target:
+        kind: "subject"
+        subject:
+          kind: "interactable"
+          interactable:
+            $ref:
+              registry: "interactableInstances"
+              id: "switch-1"

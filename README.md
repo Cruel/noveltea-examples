@@ -4,6 +4,13 @@ Public, editable example Projects for NovelTea.
 
 This repository owns example source and human-authored showcase metadata. It does not depend on the `Cruel/nt` source tree. Builds consume an explicit NovelTea standalone CLI plus an explicit Web player template/descriptor and produce a deterministic catalog and artifacts.
 
+Both example Projects use the canonical sparse YAML authoring workspace: `project.yaml`,
+`editor.yaml`, `traits.yaml`, `records/**/*.yaml`, and `i18n/**/*.yaml`.
+Lua and shader sources remain in their own formats, and `examples.json` remains
+the machine-readable showcase manifest. To edit a Project, use `noveltea fmt
+--strip-defaults` followed by read-only `noveltea validate`. The compiler
+and runtime-package exporter still emit their normal machine formats.
+
 ## Examples
 
 - **Materials** demonstrates one authored shader, two material instances with different uniform overrides, and room presentation using those materials.
@@ -69,5 +76,8 @@ Run the repository-local contract tests:
 ```sh
 npm test
 ```
+
+These tests also check that both tracked example workspaces have their YAML
+owners and contain no retired JSON authoring files.
 
 For the complete integration seam, run the build command above. A successful build proves both Projects validate, `.ntproject` export/import round-trips and revalidates, runtime packages export, and the supplied Web player can stage playable artifacts.

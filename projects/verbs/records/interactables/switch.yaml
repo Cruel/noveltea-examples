@@ -1,0 +1,10 @@
+id: "switch"
+label: "Brass Switch"
+archetype: null
+archetypeOverrides: {}
+traits: []
+defaultProperties: []
+data:
+  displayName: "Brass Switch"
+  stackable: false
+  stackLimit: null

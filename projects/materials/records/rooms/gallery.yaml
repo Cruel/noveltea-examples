@@ -1,0 +1,39 @@
+id: "gallery"
+label: "Material Gallery"
+archetype: null
+archetypeOverrides: {}
+traits: []
+localProperties: []
+data:
+  displayName: "Material Gallery"
+  background:
+    materialApplication:
+      material: "cool"
+      parameters: {}
+      textures: {}
+    color: "#ffffff"
+  description:
+    source:
+      kind: "inline"
+      text: "The blue field and warm overlay use the same authored shader with different Material uniform overrides."
+  presentationSpace:
+    size:
+      width: 1920
+      height: 1080
+    defaultView:
+      center:
+        x: 960
+        "y": 540
+  environments:
+    - id: "warm-panel"
+      visual: null
+      materialApplication:
+        material: "warm"
+        parameters: {}
+        textures: {}
+      bounds:
+        x: 0.55
+        "y": 0.18
+        width: 0.3
+        height: 0.64
+      plane: "world-overlay"

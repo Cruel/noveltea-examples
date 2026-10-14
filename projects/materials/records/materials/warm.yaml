@@ -1,0 +1,25 @@
+id: "warm"
+label: "Warm Material"
+data:
+  base:
+    kind: "preset"
+    preset: "engine-2d"
+  displayName: "Warm Material"
+  shader:
+    vertex:
+      kind: "project"
+      path: "shaders/tint.vs.sc"
+    fragment:
+      kind: "project"
+      path: "shaders/tint.fs.sc"
+  parameters:
+    u_tint:
+      value:
+        - 0.95
+        - 0.32
+        - 0.16
+        - 1
+  textures: {}
+  preview:
+    geometry: "quad"
+    background: "checker"
